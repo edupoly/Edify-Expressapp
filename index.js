@@ -1,6 +1,8 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var fs = require("fs");
+const { timeStamp } = require("console");
 
 app.use(express.static(__dirname + "/public"));
 
@@ -8,7 +10,6 @@ app.use(bodyParser.urlencoded({ extended: false })); //what this line does
 app.use(bodyParser.json());
 
 app.get("/", function (req, res) {
-  app.get("/");
   console.log("Request recieved");
   res.send("Welcome to ExpressJS API endpoint creation");
 });
@@ -25,17 +26,43 @@ app.post("/regStudent", function (req, res) {
   res.send(" lets understand the POST");
 });
 
-app.get(
-  "/add/:x/:y",
-  function (req, res, next) {
-    console.log("callback middleware called");
-    next();
-  },
-  function (req, res) {
-    console.log(req.params);
-    res.send(Number(req.params.x) + Number(req.params.y));
-  },
-);
+app.post("/riseTicket", (req, res) => {
+  console.log(req.body);
+
+  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
+  var issueObject = {
+    ...req.body,
+    timeStamp: Date.now(),
+    status: "Pending",
+  };
+  fd.push(issueObject);
+  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
+  res.send({ msg: "please wait" });
+});
+
+app.get("/getAllTickets", (req, res) => {
+  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
+  res.send(fd);
+});
+
+app.put("/updateTicket/:id", (req, res) => {
+  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
+  fd[req.params.id].status = "Processing...";
+  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
+  res.send({ msg: "ticket Updated" });
+});
+
+app.delete("/deleteTicket/:id", (req, res) => {
+  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
+  fd.splice(req.params.id, 1);
+  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
+  res.send({ msg: "ticket DEleted" });
+});
+
+app.get("/add/:x/:y", function (req, res) {
+  console.log(req.params);
+  res.send(Number(req.params.x) + Number(req.params.y));
+});
 
 app.get("/sum", (req, res) => {
   console.log(req.query);
