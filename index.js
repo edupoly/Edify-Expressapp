@@ -2,16 +2,35 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var fs = require("fs");
-const { timeStamp } = require("console");
+var cookieParser = require("cookie-parser");
 
 app.use(express.static(__dirname + "/public"));
-
 app.use(bodyParser.urlencoded({ extended: false })); //what this line does
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.get("/", function (req, res) {
   console.log("Request recieved");
   res.send("Welcome to ExpressJS API endpoint creation");
+});
+
+app.post("/login", (req, res) => {
+  console.log(req.body);
+  var users = JSON.parse(fs.readFileSync(__dirname + "/users.txt").toString());
+  var k = users.find((user) => {
+    if (
+      user.username === req.body.username &&
+      user.password === req.body.password
+    ) {
+      return true;
+    }
+  });
+  if (k) {
+    console.log("hi");
+    res.cookie("username", req.body.username);
+    res.cookie("password", req.body.password);
+  }
+  res.send("Please wait");
 });
 
 app.get("/regStudent", function (req, res) {
@@ -25,10 +44,29 @@ app.post("/regStudent", function (req, res) {
   console.log("req.body", req.body);
   res.send(" lets understand the POST");
 });
+function auth(req, res, next) {
+  var users = JSON.parse(fs.readFileSync(__dirname + "/users.txt").toString());
+  var k = users.find((user) => {
+    if (
+      user.username === req.cookies.username &&
+      user.password === req.cookies.password
+    ) {
+      return true;
+    }
+  });
+  if (k) {
+    next();
+  } else {
+    res.redirect("/login.html");
+  }
+}
+app.get("/getAllTickets", auth, (req, res) => {
+  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
+  res.send(fd);
+});
 
 app.post("/riseTicket", (req, res) => {
   console.log(req.body);
-
   var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
   var issueObject = {
     ...req.body,
@@ -38,11 +76,6 @@ app.post("/riseTicket", (req, res) => {
   fd.push(issueObject);
   var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
   res.send({ msg: "please wait" });
-});
-
-app.get("/getAllTickets", (req, res) => {
-  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
-  res.send(fd);
 });
 
 app.put("/updateTicket/:id", (req, res) => {
@@ -59,7 +92,7 @@ app.delete("/deleteTicket/:id", (req, res) => {
   res.send({ msg: "ticket DEleted" });
 });
 
-app.get("/add/:x/:y", function (req, res) {
+app.get("/add/:x/:y", auth, function (req, res) {
   console.log(req.params);
   res.send(Number(req.params.x) + Number(req.params.y));
 });
