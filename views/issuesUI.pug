@@ -1,6 +1,12 @@
 html
     body
-        h1 Hello #{fullname}
+        h1(style={color:'red'}) Hello #{fullname}
+        input(type="radio" name="staus" checked)
+        label All
+        input(type="radio" name="staus")
+        label Processing
+        input(type="radio" name="staus") 
+        label Pending
         table(border=2)
             thead
                 tr 
@@ -9,7 +15,7 @@ html
                     th Time
                     th Status
             each issue in issues
-                tr
+                tr()
                     td #{issue.issueType}
                     td #{issue.remarks}
                     td #{(new Date(issue.timeStamp)).toLocaleString()}
