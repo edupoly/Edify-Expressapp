@@ -2,63 +2,19 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var fs = require("fs");
-var cookieParser = require("cookie-parser");
-var session = require("express-session");
-var uid = require("uuid");
+var arth = require("./routes/arth.routes");
+var ticketRoutes = require("./routes/tickets.routes");
+var { createSession, userLogin } = require("./middlewares");
 
-app.use(
-  session({
-    secret: "idonttellyou",
-    genid: () => {
-      return uid.v4();
-    },
-    cookie: {
-      maxAge: 60000,
-    },
-  }),
-);
+app.use(createSession());
 app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.urlencoded({ extended: false })); //what this line does
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// app.use(cookieParser());
 
-app.use(function (req, res, next) {
-  if (req.session.count) {
-    req.session.count++;
-  } else {
-    req.session.count = 1;
-  }
-  next();
-});
+app.use("/math", arth);
+app.use("/tickets", ticketRoutes);
 
-app.get("/", function (req, res) {
-  console.log("Request recieved");
-  res.send("Welcome to ExpressJS API endpoint creation");
-});
-app.get("/home", (req, res) => {
-  res.send({ count: req.session.count });
-});
-
-app.post("/login", (req, res) => {
-  console.log(req.body);
-  var users = JSON.parse(fs.readFileSync(__dirname + "/users.txt").toString());
-  var k = users.find((user) => {
-    if (
-      user.username === req.body.username &&
-      user.password === req.body.password
-    ) {
-      return true;
-    }
-  });
-  if (k) {
-    console.log("hi");
-    req.session.username = req.body.username;
-    req.session.password = req.body.password;
-    // res.cookie("username", req.body.username);
-    // res.cookie("password", req.body.password);
-  }
-  res.send("Please wait");
-});
+app.post("/login", userLogin);
 
 app.get("/regStudent", function (req, res) {
   console.log(req.query);
@@ -109,52 +65,6 @@ function auth(req, res, next) {
     res.redirect("/login.html");
   }
 }
-
-app.get("/getAllTickets", auth, (req, res) => {
-  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
-  res.send(fd);
-});
-
-app.post("/riseTicket", (req, res) => {
-  console.log(req.body);
-  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
-  var issueObject = {
-    ...req.body,
-    timeStamp: Date.now(),
-    status: "Pending",
-  };
-  fd.push(issueObject);
-  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
-  res.send({ msg: "please wait" });
-});
-
-app.put("/updateTicket/:id", (req, res) => {
-  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
-  fd[req.params.id].status = "Processing...";
-  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
-  res.send({ msg: "ticket Updated" });
-});
-
-app.delete("/deleteTicket/:id", (req, res) => {
-  var fd = JSON.parse(fs.readFileSync(__dirname + "/issues.txt").toString());
-  fd.splice(req.params.id, 1);
-  var s = fs.writeFileSync(__dirname + "/issues.txt", JSON.stringify(fd));
-  res.send({ msg: "ticket DEleted" });
-});
-
-app.get("/add/:x/:y", auth, function (req, res) {
-  console.log(req.params);
-  res.send(
-    " HI!!" +
-      req.session.username +
-      (+Number(req.params.x) + +Number(req.params.y)),
-  );
-});
-
-app.get("/sum", (req, res) => {
-  console.log(req.query);
-  res.send("Please wait...");
-});
 
 app.listen(3700, function () {
   console.log("Server running on 3700");

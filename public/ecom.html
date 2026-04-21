@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="products.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <div id="d2"></div>
+    <script type="text/babel">
+        var products = details.products;
+        var productsUI = <ul style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
+            {
+                products.map(function (pr) {
+                    return <li style={{ margin: "50px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: '200px' }}>
+                        <b>{pr.title}</b>
+                        <img style={{ width: "100%" }} src={pr.thumbnail} alt="" />
+                        <div>
+                            <b>{pr.price - (pr.price * pr.discountPercentage / 100)}</b><sup><strike>{pr.price}</strike></sup>
+                        </div>
+                    </li>
+                })
+            }
+
+        </ul>
+        ReactDOM.render(productsUI, document.getElementById('d2'))
+    </script>
+</body>
+
+</html>

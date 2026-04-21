@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+        .e {
+            color: red;
+            font-family: Arial, Helvetica, sans-serif;
+            border: 4px solid green;
+        }
+
+        .o {
+            color: rgb(41, 67, 237);
+            font-family: 'Courier New', Courier, monospace;
+            border: 4px dashed green;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hello Praveen 10+20</h1>
+    <div id="d2"></div>
+    <script type="text/babel">
+        // var n = +prompt();
+
+        // // var k = <h1 style={n % 2 == 0 ? { color: 'red' } : { color: 'green' }}>{n}</h1>
+        // var k = <h1 className={n % 2 == 0 ? "e" : "o"}>{n}</h1>
+        // console.log(k);
+        // var students = ["Nithin", "Kiran", "Prakash", "Ravi", "Sai", "Abhishek"]
+        // var studentsUI = <ul>
+        //     {
+        //         students.map(function (s) {
+        //             return <li>{s}</li>
+        //         })
+        //     }
+        // </ul>
+        var reviews = [
+            {
+                "rating": 3,
+                "comment": "Would not recommend!",
+                "date": "2025-04-30T09:41:02.053Z",
+                "reviewerName": "Eleanor Collins",
+                "reviewerEmail": "eleanor.collins@x.dummyjson.com"
+            },
+            {
+                "rating": 4,
+                "comment": "Very satisfied!",
+                "date": "2025-04-30T09:41:02.053Z",
+                "reviewerName": "Lucas Gordon",
+                "reviewerEmail": "lucas.gordon@x.dummyjson.com"
+            },
+            {
+                "rating": 5,
+                "comment": "Highly impressed!",
+                "date": "2025-04-30T09:41:02.053Z",
+                "reviewerName": "Eleanor Collins",
+                "reviewerEmail": "eleanor.collins@x.dummyjson.com"
+            }
+        ]
+        var reviewsUI = <ul style={{ display: 'flex', flexWrap: "wrap" }}>
+            {
+                reviews.map((review) => {
+                    return (
+                        <li style={{ width: "100px;", display: "flex", flexDirection: "column", border: '2px solid grey', padding: "10px", margin: '10px', borderRadius: "10px" }}>
+                            <p>{review.comment}</p>
+                            <b>{review.rating}/5</b>
+                            <i>{review.reviewerName}</i>
+                            <i>{review.reviewerEmail}</i>
+                        </li>
+                    )
+                })
+            }
+        </ul>
+        ReactDOM.render(reviewsUI, document.getElementById("d2"))
+    </script>
+</body>
+
+</html>
