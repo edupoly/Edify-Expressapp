@@ -3,8 +3,7 @@ var mongoose = require("mongoose");
 var leadSchema = mongoose.Schema({
   name: {
     type: String,
-    minLength: 3,
-    maxLength: 5,
+    minlength: 5,
     required: true,
   },
   phone: Number,

@@ -1,12 +1,21 @@
 var LeadModel = require("../model/lead.model");
 
 const addLeadController = (req, res) => {
-  console.log(req.body);
-  var mode = req.body.isOffline === "Offline" ? true : false;
-  var newLead = new LeadModel({ ...req.body, isOffline: mode });
-  console.log(newLead);
-  //   newLead.save();
-  res.send("Please wait....");
+  console.log("request body::::", req.body);
+  // req.body.isOffline = req.body.isOffline == "Offline" ? true : false;
+  var newLead = new LeadModel(req.body);
+  console.log("newLead:::::", newLead);
+  newLead
+    .validate()
+    .then(() => {
+      newLead.save();
+      res.send("Please wait");
+    })
+    .catch((e) => {
+      console.log("Error occured", e.errors.name.properties.message);
+      res.send({ error: e.errors.name.properties.message });
+    });
+  // newLead.save();
 };
 
 const getLeadsController = (req, res) => {
