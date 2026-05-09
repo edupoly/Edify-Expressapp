@@ -1,21 +1,18 @@
 var LeadModel = require("../model/lead.model");
-
+var leadValidationSchema = require("../validations/leadValidation");
 const addLeadController = (req, res) => {
-  console.log("request body::::", req.body);
-  // req.body.isOffline = req.body.isOffline == "Offline" ? true : false;
-  var newLead = new LeadModel(req.body);
-  console.log("newLead:::::", newLead);
-  newLead
-    .validate()
-    .then(() => {
-      newLead.save();
-      res.send("Please wait");
-    })
-    .catch((e) => {
-      console.log("Error occured", e.errors.name.properties.message);
-      res.send({ error: e.errors.name.properties.message });
-    });
-  // newLead.save();
+  // console.log("request body::::", req.body);
+  const { error, value } = leadValidationSchema.validate(req.body, {
+    abortEarly: false,
+  });
+  // console.log("errors:::", error);
+  if (error) {
+    res.send(error.details);
+  } else {
+    var newLead = new LeadModel(value);
+    newLead.save();
+    res.send("Saved...");
+  }
 };
 
 const getLeadsController = (req, res) => {

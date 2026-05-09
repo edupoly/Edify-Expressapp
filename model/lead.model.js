@@ -1,11 +1,7 @@
 var mongoose = require("mongoose");
 //create schema for validation
 var leadSchema = mongoose.Schema({
-  name: {
-    type: String,
-    minlength: 5,
-    required: true,
-  },
+  name: String,
   phone: Number,
   course: String,
   timeStamp: Date,
